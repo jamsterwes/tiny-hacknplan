@@ -1,0 +1,31 @@
+<html ng-app="goWebApp">
+    <head>
+        <title>Go Web</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+        <link rel="stylesheet" href="/assets/css/index.css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular.min.js"></script>
+        <script src="/assets/js/app.js"></script>
+    </head>
+    <body ng-controller="HomeListController">
+        <nav class="navbar navbar-light bg-light">
+            <span class="navbar-brand mb-0 h1">tasks mini</span>
+        </nav>
+        <div class="container">
+            <h4>
+                <div class="input-group title-bar">
+                    Tasks for <input maxlength="25" class="form-control shift-box" type="text" ng-model="username" aria-describedby="basic-addon3">:
+                </div>
+            </h4>
+            <div class="row justify-content-md-center" style="margin-bottom: 25px">
+                <div class="col-sm-8">
+                    <div class="list-group">
+                        <li class="list-group-item text-center" ng-repeat="(key, value) in tasks">
+                            <span ng-style="{'background-color': value.Category.Color}" class="badge badge-secondary badge-space">{{value.Category.Name}}</span><a target="_blank" ng-href="https://app.hacknplan.com/p/31094/board?categoryId=0&milestoneId=80780&taskId={{value.TaskId}}" ng-class="{'mb-0': true, 'strike': value.Stage.Name == 'Completed'}">{{value.Name}}</a>
+                        </li>
+                        <button type="button" class="btn btn-primary" ng-click="refreshData()">Refresh</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

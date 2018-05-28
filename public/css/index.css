@@ -1,0 +1,15 @@
+.strike {
+    text-decoration: line-through;
+}
+
+.title-bar {
+    width: 250px !important;
+}
+
+.shift-box {
+    margin-left: 15px;
+}
+
+.badge-space {
+    margin-right: 5px;
+}
