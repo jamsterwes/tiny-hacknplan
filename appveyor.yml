@@ -17,6 +17,7 @@ install:
   - set PATH=%GOPATH%\bin;c:\go\bin;%PATH%
   - go version
   - go env
+  - go get github.com/julienschmidt/httprouter
 
 build_script:
   - go build -o buildOutput\myapp -i .
