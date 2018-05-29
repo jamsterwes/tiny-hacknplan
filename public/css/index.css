@@ -13,3 +13,43 @@
 .badge-space {
     margin-right: 5px;
 }
+
+.wrapper {
+    display: flex;
+    align-items: stretch;
+}
+
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    min-height: 100vh;
+    background-color: #e7eaed;
+    border-top: 1px solid #dce0e4;
+}
+
+.user-filter {
+    margin-bottom: 10px;
+}
+
+#sidebar .list-group-item {
+    background-color: #e7eaed!important;
+    border-color: #dce0e4;
+}
+
+#content {
+    width: 100%
+}
+
+.profile-picture {
+    width: 32px;
+    border-radius: 50%;
+}
+
+#sidebar .list-group-item.user-link {
+    cursor: pointer;
+}
+
+#sidebar .list-group-item.user-link:hover {
+    cursor: pointer;
+    background-color: hsl(210, 50%, 92%)!important;
+}

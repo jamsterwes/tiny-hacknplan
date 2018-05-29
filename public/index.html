@@ -1,31 +1,77 @@
 <html ng-app="goWebApp">
-    <head>
-        <title>Go Web</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-        <link rel="stylesheet" href="/assets/css/index.css" />
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular.min.js"></script>
-        <script src="/assets/js/app.js"></script>
-    </head>
-    <body ng-controller="HomeListController">
-        <nav class="navbar navbar-light bg-light">
-            <span class="navbar-brand mb-0 h1">tasks mini</span>
+
+<head>
+    <title>Go Web</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="/assets/css/index.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular.min.js"></script>
+    <script src="/assets/js/app.js"></script>
+</head>
+
+<body ng-controller="HomeListController">
+    <nav class="navbar navbar-light bg-light">
+        <span class="navbar-brand mb-0 h1">tasks mini</span>
+    </nav>
+    <div class="wrapper">
+        <nav id="sidebar">
+            <div class="sidebar-header text-center">
+                <h3>Users</h3>
+            </div>
+            <ul class="nav nav-pills user-filter justify-content-md-center">
+                <li class="nav-item">
+                    <a ng-click="setShowUsername()" ng-class="{'nav-link': true, 'active': !showName}" href="#">Username</a>
+                </li>
+                <li class="nav-item">
+                    <a ng-click="setShowName()" ng-class="{'nav-link': true, 'active': showName}" href="#">Name</a>
+                </li>
+            </ul>
+            <ul class="list-group text-center">
+                <span class="list-group-item user-link" ng-repeat="user in users | orderBy:(showName ? 'Name' : 'Username')" ng-click="loadUser(user.Username)">
+                    <div class="row">
+                        <div class="col-sm-2"><img ng-src="{{user.AvatarUrl}}" class="profile-picture"></div>
+                        <div class="col-sm-7 text-left">
+                            {{showName ? user.Name : user.Username}}
+                        </div>
+                        <div class="col-sm-3 text-left">
+                            <span class="badge badge-primary">{{user.CompletedTaskCount}}/{{user.TaskCount}}</span>
+                        </div>
+                    </div>
+                </span>
+            </ul>
         </nav>
-        <div class="container">
-            <h4>
-                <div class="input-group title-bar">
-                    Tasks for <input maxlength="25" class="form-control shift-box" type="text" ng-model="username" aria-describedby="basic-addon3">:
-                </div>
-            </h4>
-            <div class="row justify-content-md-center" style="margin-bottom: 25px">
-                <div class="col-sm-8">
-                    <div class="list-group">
-                        <li class="list-group-item text-center" ng-repeat="(key, value) in tasks">
-                            <span ng-style="{'background-color': value.Category.Color}" class="badge badge-secondary badge-space">{{value.Category.Name}}</span><a target="_blank" ng-href="https://app.hacknplan.com/p/31094/board?categoryId=0&milestoneId=80780&taskId={{value.TaskId}}" ng-class="{'mb-0': true, 'strike': value.Stage.Name == 'Completed'}">{{value.Name}}</a>
-                        </li>
-                        <button type="button" class="btn btn-primary" ng-click="refreshData()">Refresh</button>
+        <div id="content">
+            <div class="container">
+                <h4>
+                    <div class="input-group title-bar">
+                        Tasks for
+                        <input maxlength="25" class="form-control shift-box" type="text" ng-model="username" aria-describedby="basic-addon3">:
+                    </div>
+                </h4>
+                <div class="row justify-content-md-center" style="margin-bottom: 25px">
+                    <div class="col-sm-8">
+                        <div class="list-group">
+                            <li class="list-group-item">
+                                <nav class="nav nav-pills nav-fill">
+                                    <a ng-click="setShowAll()" ng-class="{'nav-item': true, 'nav-link': true, 'active': showComplete && showIncomplete}" href="#">All</a>
+                                    <a ng-click="setShowComplete()" ng-class="{'nav-item': true, 'nav-link': true, 'active': showComplete && !showIncomplete}" href="#">Completed</a>
+                                    <a ng-click="setShowIncomplete()" ng-class="{'nav-item': true, 'nav-link': true, 'active': !showComplete && showIncomplete}" href="#">Incomplete</a>
+                                </nav>
+                            </li>
+                            <span ng-repeat="(key, value) in tasks">
+                                <li class="list-group-item text-center" ng-if="checkShowTask(value.Stage)">
+                                    <span ng-style="{'background-color': value.Category.Color}" class="badge badge-secondary badge-space">{{value.Category.Name}}</span>
+                                    <a target="_blank" ng-href="https://app.hacknplan.com/p/31094/board?categoryId=0&milestoneId=80780&taskId={{value.TaskId}}"
+                                        ng-class="{'mb-0': true, 'strike': value.Stage.Name == 'Completed'}">{{value.Name}}</a>
+                                </li>
+                            </span>
+                            <button type="button" class="btn btn-primary" ng-click="refreshData()">Refresh</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </body>
+    </div>
+</body>
+
 </html>

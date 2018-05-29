@@ -68,32 +68,93 @@ type hackTask struct {
 
 var apiKey string
 
-// getTasks returns a list of tasks from hack n' plan
-func getTasks() []hackTask {
+func apiRequest(url string) []byte {
 	BearerToken := "Bearer " + apiKey
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", "https://app.hacknplan.com/api/v1/projects/31094/milestones/80780/tasks?categoryId=0", nil)
+	req, err := http.NewRequest("GET", url, nil)
 	req.Header.Add("Authorization", BearerToken)
 	req.Header.Add("X-AppVersion", "110")
 	resp, err := client.Do(req)
 	if err != nil {
 		panic(err)
 	}
-	tasksJSON, err := ioutil.ReadAll(resp.Body)
+	respJSON, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		panic(err)
 	}
+	return respJSON
+}
+
+// getTasks returns a list of tasks from hack n' plan
+func getTasks() []hackTask {
+	tasksJSON := apiRequest("https://app.hacknplan.com/api/v1/projects/31094/milestones/80780/tasks?categoryId=0")
 	var tasks []hackTask
-	err = json.Unmarshal(tasksJSON, &tasks)
+	err := json.Unmarshal(tasksJSON, &tasks)
 	if err != nil {
 		panic(err)
 	}
 	return tasks
 }
 
+// https://app.hacknplan.com/api/v1/projects/31094/users?includeInactive=true
+func getUsers() []hackUser {
+	tasksJSON := apiRequest("https://app.hacknplan.com/api/v1/projects/31094/users?includeInactive=true")
+	var tasks []hackUser
+	err := json.Unmarshal(tasksJSON, &tasks)
+	if err != nil {
+		panic(err)
+	}
+	return tasks
+}
+
+type hackUserCounted struct {
+	UserId             int
+	Username           string
+	Name               string
+	AvatarUrl          string
+	IsAdmin            bool
+	IsActive           bool
+	CompletedTaskCount int
+	TaskCount          int
+}
+
+func countUserTasks(users []hackUser) []hackUserCounted {
+	countedUsersMap := make(map[string]hackUserCounted, len(users))
+	for _, user := range users {
+		userCounted := hackUserCounted{
+			UserId:             user.UserId,
+			Username:           user.Username,
+			Name:               user.Name,
+			AvatarUrl:          user.AvatarUrl,
+			IsAdmin:            user.IsAdmin,
+			IsActive:           user.IsActive,
+			CompletedTaskCount: 0,
+			TaskCount:          0,
+		}
+		countedUsersMap[user.Username] = userCounted
+	}
+	tasks := getTasks()
+	for _, task := range tasks {
+		for _, user := range task.AssignedUsers {
+			newCU := countedUsersMap[user.Username]
+			newCU.TaskCount++
+			if task.Stage.Name == "Completed" {
+				newCU.CompletedTaskCount++
+			}
+			countedUsersMap[user.Username] = newCU
+		}
+	}
+	countedUsers := make([]hackUserCounted, 0, len(countedUsersMap))
+	for _, countedUser := range countedUsersMap {
+		countedUsers = append(countedUsers, countedUser)
+	}
+	return countedUsers
+}
+
 // BootstrapAPI connects the API to the main app's router
 func BootstrapAPI(r **httprouter.Router, _apiKey string) {
 	apiKey = _apiKey
+	(*r).GET("/api/users", userHandler)
 	(*r).GET("/api/my_tasks/:username", rootHandler)
 }
 
@@ -121,4 +182,15 @@ func rootHandler(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		}
 		fmt.Fprintln(rw, string(data))
 	}
+}
+
+func userHandler(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	rw.Header().Add("Content-Type", "application/json")
+	users := getUsers()
+	countedUsers := countUserTasks(users)
+	data, err := json.Marshal(countedUsers)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Fprintln(rw, string(data))
 }
