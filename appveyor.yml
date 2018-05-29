@@ -20,8 +20,8 @@ install:
   - go get github.com/julienschmidt/httprouter
 
 build_script:
-  - go build -o buildOutput\myapp -i .
-  - xcopy public buildOutput\public /e /i
+  - go build -o tiny-hacknplan_%APPVEYOR_BUILD_VERSION%\server.exe -i .
+  - xcopy public tiny-hacknplan_%APPVEYOR_BUILD_VERSION%\public /e /i
 
 artifacts:
-  - path: buildOutput
+  - path: tiny-hacknplan_%APPVEYOR_BUILD_VERSION%
