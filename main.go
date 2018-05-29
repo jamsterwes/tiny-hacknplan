@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"./server"
+	"github.com/jamsterwes/tiny-hacknplan/server"
 )
 
 func main() {

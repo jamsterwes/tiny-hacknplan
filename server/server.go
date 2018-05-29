@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"./api"
+	"github.com/jamsterwes/tiny-hacknplan/server/api"
 
 	"github.com/julienschmidt/httprouter"
 )
